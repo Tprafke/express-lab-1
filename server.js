@@ -1,5 +1,5 @@
 "use strict";
-// require the Express module, body-parser, and cors
+// require the Express module, body-parser, and cors (dont really need body parser)
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -11,8 +11,11 @@ const app = express();
 // Enable Cross Origin Resource Sharing so this API
 // can be used from web-apps other domains.
 app.use(cors());
-// allow POST and PUT requests to use JSON bodies
+// allow POST and PUT requests to use JSON bodies -- dont really need
 app.use(bodyParser.json());
+//or
+//app.use(express.json());
+
 // use the routes file
 app.use("/", routes);
 

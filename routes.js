@@ -1,7 +1,12 @@
 "use strict";
+
+//require the express module
 const express = require("express");
+
+//Creates a new router object
 const routes = express.Router();
 
+//Declare cart array
 const cartItems = [
 	{ id: 1, product: "cereal", price: 2.0, quantity: 4 },
 	{ id: 2, product: "milk", price: 3.0, quantity: 2 },
@@ -10,7 +15,7 @@ const cartItems = [
 ];
 let nextId = 5;
 
-routes.get("/cartItems", (req, res) => {
+routes.get("/cart-items", (req, res) => {
 	const maxPrice = parseInt(req.query.maxPrice);
 	const prefix = req.query.prefix;
 	const pageSize = req.query.pageSize;
@@ -19,18 +24,22 @@ routes.get("/cartItems", (req, res) => {
 		const filteredCart = cartItems.filter((item) => item.price <= maxPrice);
 		res.json(filteredCart);
 	} else if (prefix) {
-		const filteredCart = cartItems.filter((item) => item.product === prefix);
+		const filteredCart = cartItems.filter((item) => {
+			let currentItem = item.product.toLowerCase();
+			return currentItem.startsWith(req.query.prefix.toLowerCase());
+		});
 		res.json(filteredCart);
 	} else if (pageSize) {
 		const filteredCart = cartItems.filter((item) => item.id <= pageSize);
 		res.json(filteredCart);
 	} else {
+		res.status(200);
 		res.json(cartItems);
 	}
 });
 
 //get one cart-item by id
-routes.get("/cartItems/:id", (req, res) => {
+routes.get("/cart-items/:id", (req, res) => {
 	const id = parseInt(req.params.id);
 	const item = cartItems.find((item) => item.id === id);
 	if (item) {
@@ -43,7 +52,7 @@ routes.get("/cartItems/:id", (req, res) => {
 });
 
 //Add item to cart
-routes.post("/cartItems", (req, res) => {
+routes.post("/cart-items", (req, res) => {
 	const item = req.body;
 	item.id = nextId++;
 	cartItems.push(item);
@@ -53,7 +62,8 @@ routes.post("/cartItems", (req, res) => {
 });
 
 //Update a cart-item
-routes.put("/cartItems/:id", (req, res) => {
+//items[index] = req.body
+routes.put("/cart-items/:id", (req, res) => {
 	const id = parseInt(req.params.id);
 	const item = cartItems.find((item) => item.id === id);
 	const newItem = req.body;
@@ -66,7 +76,7 @@ routes.put("/cartItems/:id", (req, res) => {
 });
 
 //Delete an item
-routes.delete("/cartItems/:id", (req, res) => {
+routes.delete("/cart-items/:id", (req, res) => {
 	const id = parseInt(req.params.id);
 	const index = cartItems.findIndex((item) => item.id === id);
 	if (index !== -1) {
